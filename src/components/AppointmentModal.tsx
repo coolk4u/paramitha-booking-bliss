@@ -1,10 +1,10 @@
-
 import React, { useState } from 'react';
 import { X, Calendar, Clock, User, MapPin } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Calendar as CalendarComponent } from '@/components/ui/calendar';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { toast } from '@/hooks/use-toast';
 import { format } from 'date-fns';
 
@@ -63,11 +63,12 @@ const AppointmentModal = ({ isOpen, onClose, doctor, specialty, location }: Appo
         <div className="space-y-6">
           {/* Doctor Info */}
           <div className="flex items-center gap-4 p-4 bg-gray-50 rounded-lg">
-            <img
-              src={doctor.image}
-              alt={doctor.name}
-              className="w-16 h-16 rounded-full object-cover bg-gray-200"
-            />
+            <Avatar className="w-16 h-16">
+              <AvatarImage src={doctor.image} alt={doctor.name} />
+              <AvatarFallback className="bg-pink-100 text-pink-600 text-lg">
+                {doctor.name.split(' ').map((n: string) => n[0]).join('')}
+              </AvatarFallback>
+            </Avatar>
             <div className="flex-1">
               <h3 className="font-semibold text-gray-800">{doctor.name}</h3>
               <p className="text-sm text-gray-600 flex items-center gap-1">

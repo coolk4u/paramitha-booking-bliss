@@ -1,12 +1,12 @@
-
 import React, { useState } from 'react';
-import { Calendar, Clock, User, Stethoscope, Heart, Eye, Baby, Bone, Brain, ArrowLeft, MapPin, Search, Filter } from 'lucide-react';
+import { Calendar, Clock, User, Stethoscope, Heart, Eye, Baby, Bone, Brain, ArrowLeft, MapPin, Search, Filter, Building2, Users } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { useNavigate } from 'react-router-dom';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { ScrollArea } from '@/components/ui/scroll-area';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import AppointmentModal from '@/components/AppointmentModal';
 
 const specialties = [
@@ -23,99 +23,99 @@ const locations = [
     id: 1, 
     name: 'Kompally', 
     address: '38, NCL Enclave South, Caton Residential Twp, Jeedimetla, Hyderabad',
-    image: '/placeholder.svg'
+    image: 'https://images.unsplash.com/photo-1433086966358-54859d0ed716?w=400&h=300&fit=crop'
   },
   { 
     id: 2, 
     name: 'Chintal', 
     address: '01, Andhra Pradesh Housing Board Colony, APHB Colony, MIG-1, Balanagar',
-    image: '/placeholder.svg'
+    image: 'https://images.unsplash.com/photo-1459767129954-1b1c1f9b9ace?w=400&h=300&fit=crop'
   },
   { 
     id: 3, 
     name: 'Medipally', 
     address: 'CH5X+586, beside Apex Hospital, Om Vihar Colony, Sri Sai Nagar, Canara Nagar',
-    image: '/placeholder.svg'
+    image: 'https://images.unsplash.com/photo-1433086966358-54859d0ed716?w=400&h=300&fit=crop'
   },
   { 
     id: 4, 
     name: 'Kothapet', 
     address: '2, polkampally, Dwarka Nagar, L. B. Nagar',
-    image: '/placeholder.svg'
+    image: 'https://images.unsplash.com/photo-1459767129954-1b1c1f9b9ace?w=400&h=300&fit=crop'
   },
   { 
     id: 5, 
     name: 'Chandannagar', 
     address: 'F8WC+68H, NH 65, Gouthami Nagar Colony, Jawahar Colony, Chanda Nagar',
-    image: '/placeholder.svg'
+    image: 'https://images.unsplash.com/photo-1433086966358-54859d0ed716?w=400&h=300&fit=crop'
   },
   { 
     id: 6, 
     name: 'Madinaguda', 
     address: 'Main Road Madinaguda, Ramakrishna Nagar, Hafeezpet, Miyapur',
-    image: '/placeholder.svg'
+    image: 'https://images.unsplash.com/photo-1459767129954-1b1c1f9b9ace?w=400&h=300&fit=crop'
   },
 ];
 
 const doctors = {
   1: {
     1: [
-      { id: 1, name: 'Dr. Rajesh Kumar', experience: '15 years', rating: 4.8, image: '/placeholder.svg' },
-      { id: 2, name: 'Dr. Priya Sharma', experience: '12 years', rating: 4.9, image: '/placeholder.svg' },
+      { id: 1, name: 'Dr. Rajesh Kumar', experience: '15 years', rating: 4.8, image: 'https://images.unsplash.com/photo-1612349317150-e413f6a5b16d?w=400&h=400&fit=crop' },
+      { id: 2, name: 'Dr. Priya Sharma', experience: '12 years', rating: 4.9, image: 'https://images.unsplash.com/photo-1559839734-2b71ea197ec2?w=400&h=400&fit=crop' },
     ],
     2: [
-      { id: 3, name: 'Dr. Amit Singh', experience: '18 years', rating: 4.7, image: '/placeholder.svg' },
-      { id: 4, name: 'Dr. Sunita Patel', experience: '10 years', rating: 4.8, image: '/placeholder.svg' },
+      { id: 3, name: 'Dr. Amit Singh', experience: '18 years', rating: 4.7, image: 'https://images.unsplash.com/photo-1582750433449-648ed127bb54?w=400&h=400&fit=crop' },
+      { id: 4, name: 'Dr. Sunita Patel', experience: '10 years', rating: 4.8, image: 'https://images.unsplash.com/photo-1594824506107-46d80b5b7c70?w=400&h=400&fit=crop' },
     ],
   },
   2: {
     1: [
-      { id: 5, name: 'Dr. Vikram Reddy', experience: '20 years', rating: 4.9, image: '/placeholder.svg' },
-      { id: 6, name: 'Dr. Meera Joshi', experience: '14 years', rating: 4.8, image: '/placeholder.svg' },
+      { id: 5, name: 'Dr. Vikram Reddy', experience: '20 years', rating: 4.9, image: 'https://images.unsplash.com/photo-1622253692010-333f2da6031d?w=400&h=400&fit=crop' },
+      { id: 6, name: 'Dr. Meera Joshi', experience: '14 years', rating: 4.8, image: 'https://images.unsplash.com/photo-1607990281513-2c110a25bd8c?w=400&h=400&fit=crop' },
     ],
     2: [
-      { id: 7, name: 'Dr. Rohit Gupta', experience: '8 years', rating: 4.7, image: '/placeholder.svg' },
-      { id: 8, name: 'Dr. Kavya Nair', experience: '11 years', rating: 4.9, image: '/placeholder.svg' },
+      { id: 7, name: 'Dr. Rohit Gupta', experience: '8 years', rating: 4.7, image: 'https://images.unsplash.com/photo-1612349317150-e413f6a5b16d?w=400&h=400&fit=crop' },
+      { id: 8, name: 'Dr. Kavya Nair', experience: '11 years', rating: 4.9, image: 'https://images.unsplash.com/photo-1559839734-2b71ea197ec2?w=400&h=400&fit=crop' },
     ],
   },
   3: {
     1: [
-      { id: 9, name: 'Dr. Arjun Menon', experience: '16 years', rating: 4.8, image: '/placeholder.svg' },
-      { id: 10, name: 'Dr. Shalini Das', experience: '9 years', rating: 4.6, image: '/placeholder.svg' },
+      { id: 9, name: 'Dr. Arjun Menon', experience: '16 years', rating: 4.8, image: 'https://images.unsplash.com/photo-1582750433449-648ed127bb54?w=400&h=400&fit=crop' },
+      { id: 10, name: 'Dr. Shalini Das', experience: '9 years', rating: 4.6, image: 'https://images.unsplash.com/photo-1594824506107-46d80b5b7c70?w=400&h=400&fit=crop' },
     ],
     3: [
-      { id: 11, name: 'Dr. Kiran Bhat', experience: '13 years', rating: 4.7, image: '/placeholder.svg' },
-      { id: 12, name: 'Dr. Deepa Rao', experience: '17 years', rating: 4.9, image: '/placeholder.svg' },
+      { id: 11, name: 'Dr. Kiran Bhat', experience: '13 years', rating: 4.7, image: 'https://images.unsplash.com/photo-1622253692010-333f2da6031d?w=400&h=400&fit=crop' },
+      { id: 12, name: 'Dr. Deepa Rao', experience: '17 years', rating: 4.9, image: 'https://images.unsplash.com/photo-1607990281513-2c110a25bd8c?w=400&h=400&fit=crop' },
     ],
   },
   4: {
     1: [
-      { id: 13, name: 'Dr. Anil Kumar', experience: '22 years', rating: 4.9, image: '/placeholder.svg' },
-      { id: 14, name: 'Dr. Pooja Reddy', experience: '15 years', rating: 4.8, image: '/placeholder.svg' },
+      { id: 13, name: 'Dr. Anil Kumar', experience: '22 years', rating: 4.9, image: 'https://images.unsplash.com/photo-1612349317150-e413f6a5b16d?w=400&h=400&fit=crop' },
+      { id: 14, name: 'Dr. Pooja Reddy', experience: '15 years', rating: 4.8, image: 'https://images.unsplash.com/photo-1559839734-2b71ea197ec2?w=400&h=400&fit=crop' },
     ],
     4: [
-      { id: 15, name: 'Dr. Suresh Babu', experience: '19 years', rating: 4.7, image: '/placeholder.svg' },
-      { id: 16, name: 'Dr. Lakshmi Devi', experience: '12 years', rating: 4.8, image: '/placeholder.svg' },
+      { id: 15, name: 'Dr. Suresh Babu', experience: '19 years', rating: 4.7, image: 'https://images.unsplash.com/photo-1582750433449-648ed127bb54?w=400&h=400&fit=crop' },
+      { id: 16, name: 'Dr. Lakshmi Devi', experience: '12 years', rating: 4.8, image: 'https://images.unsplash.com/photo-1594824506107-46d80b5b7c70?w=400&h=400&fit=crop' },
     ],
   },
   5: {
     1: [
-      { id: 17, name: 'Dr. Ravi Shankar', experience: '25 years', rating: 4.9, image: '/placeholder.svg' },
-      { id: 18, name: 'Dr. Madhavi Latha', experience: '18 years', rating: 4.8, image: '/placeholder.svg' },
+      { id: 17, name: 'Dr. Ravi Shankar', experience: '25 years', rating: 4.9, image: 'https://images.unsplash.com/photo-1622253692010-333f2da6031d?w=400&h=400&fit=crop' },
+      { id: 18, name: 'Dr. Madhavi Latha', experience: '18 years', rating: 4.8, image: 'https://images.unsplash.com/photo-1607990281513-2c110a25bd8c?w=400&h=400&fit=crop' },
     ],
     5: [
-      { id: 19, name: 'Dr. Venkat Rao', experience: '16 years', rating: 4.7, image: '/placeholder.svg' },
-      { id: 20, name: 'Dr. Sneha Reddy', experience: '13 years', rating: 4.8, image: '/placeholder.svg' },
+      { id: 19, name: 'Dr. Venkat Rao', experience: '16 years', rating: 4.7, image: 'https://images.unsplash.com/photo-1612349317150-e413f6a5b16d?w=400&h=400&fit=crop' },
+      { id: 20, name: 'Dr. Sneha Reddy', experience: '13 years', rating: 4.8, image: 'https://images.unsplash.com/photo-1559839734-2b71ea197ec2?w=400&h=400&fit=crop' },
     ],
   },
   6: {
     1: [
-      { id: 21, name: 'Dr. Prasad Kumar', experience: '20 years', rating: 4.9, image: '/placeholder.svg' },
-      { id: 22, name: 'Dr. Swathi Devi', experience: '14 years', rating: 4.8, image: '/placeholder.svg' },
+      { id: 21, name: 'Dr. Prasad Kumar', experience: '20 years', rating: 4.9, image: 'https://images.unsplash.com/photo-1582750433449-648ed127bb54?w=400&h=400&fit=crop' },
+      { id: 22, name: 'Dr. Swathi Devi', experience: '14 years', rating: 4.8, image: 'https://images.unsplash.com/photo-1594824506107-46d80b5b7c70?w=400&h=400&fit=crop' },
     ],
     6: [
-      { id: 23, name: 'Dr. Mohan Babu', experience: '17 years', rating: 4.7, image: '/placeholder.svg' },
-      { id: 24, name: 'Dr. Ramya Sree', experience: '11 years', rating: 4.8, image: '/placeholder.svg' },
+      { id: 23, name: 'Dr. Mohan Babu', experience: '17 years', rating: 4.7, image: 'https://images.unsplash.com/photo-1622253692010-333f2da6031d?w=400&h=400&fit=crop' },
+      { id: 24, name: 'Dr. Ramya Sree', experience: '11 years', rating: 4.8, image: 'https://images.unsplash.com/photo-1607990281513-2c110a25bd8c?w=400&h=400&fit=crop' },
     ],
   },
 };
@@ -229,11 +229,16 @@ const Appointments = () => {
                       >
                         <CardContent className="p-3">
                           <div className="flex items-start space-x-3">
-                            <img
-                              src={location.image}
-                              alt={location.name}
-                              className="w-8 h-8 rounded object-cover bg-gray-200 flex-shrink-0 mt-1"
-                            />
+                            <div className="relative w-10 h-10 rounded-lg overflow-hidden bg-gray-100 flex-shrink-0">
+                              <img
+                                src={location.image}
+                                alt={location.name}
+                                className="w-full h-full object-cover"
+                              />
+                              <div className="absolute inset-0 bg-pink-500/10 flex items-center justify-center">
+                                <Building2 className="w-4 h-4 text-pink-600" />
+                              </div>
+                            </div>
                             <div className="flex-1 min-w-0">
                               <h3 className="font-medium text-gray-800 text-sm">{location.name}</h3>
                               <p className="text-xs text-gray-600 line-clamp-2">{location.address}</p>
@@ -269,24 +274,32 @@ const Appointments = () => {
                 </div>
                 <ScrollArea className="h-48">
                   <div className="space-y-1">
-                    {filteredSpecialties.map((specialty) => (
-                      <div
-                        key={specialty.id}
-                        className={`flex items-center space-x-2 p-2 rounded cursor-pointer transition-all text-sm ${
-                          selectedSpecialty === specialty.id ? 'bg-pink-50 border border-pink-500' : 'hover:bg-gray-50'
-                        }`}
-                        onClick={() => handleSpecialtySelect(specialty)}
-                      >
-                        <div className={`w-3 h-3 border rounded ${
-                          selectedSpecialty === specialty.id ? 'border-pink-500 bg-pink-500' : 'border-gray-300'
-                        }`}>
-                          {selectedSpecialty === specialty.id && (
-                            <div className="w-full h-full bg-pink-500 rounded-sm"></div>
-                          )}
+                    {filteredSpecialties.map((specialty) => {
+                      const IconComponent = specialty.icon;
+                      return (
+                        <div
+                          key={specialty.id}
+                          className={`flex items-center space-x-3 p-2 rounded cursor-pointer transition-all text-sm ${
+                            selectedSpecialty === specialty.id ? 'bg-pink-50 border border-pink-500' : 'hover:bg-gray-50'
+                          }`}
+                          onClick={() => handleSpecialtySelect(specialty)}
+                        >
+                          <div className={`w-8 h-8 rounded-lg flex items-center justify-center ${specialty.color}`}>
+                            <IconComponent className="w-4 h-4" />
+                          </div>
+                          <div className="flex-1">
+                            <span className="text-gray-800 text-xs leading-tight">{specialty.name}</span>
+                          </div>
+                          <div className={`w-3 h-3 border rounded-full ${
+                            selectedSpecialty === specialty.id ? 'border-pink-500 bg-pink-500' : 'border-gray-300'
+                          }`}>
+                            {selectedSpecialty === specialty.id && (
+                              <div className="w-full h-full bg-pink-500 rounded-full"></div>
+                            )}
+                          </div>
                         </div>
-                        <span className="text-gray-800 text-xs leading-tight">{specialty.name}</span>
-                      </div>
-                    ))}
+                      );
+                    })}
                   </div>
                 </ScrollArea>
               </CardContent>
@@ -300,7 +313,7 @@ const Appointments = () => {
                 <CardHeader className="pb-3">
                   <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
                     <CardTitle className="flex items-center gap-2 text-gray-800 text-base">
-                      <User className="w-4 h-4" />
+                      <Users className="w-4 h-4" />
                       Doctors - {selectedSpecialtyData?.name}
                       <span className="text-xs text-pink-600">@ {selectedLocationData?.name}</span>
                     </CardTitle>
@@ -351,11 +364,12 @@ const Appointments = () => {
                         >
                           <CardContent className="p-4">
                             <div className="flex items-center space-x-4">
-                              <img
-                                src={doctor.image}
-                                alt={doctor.name}
-                                className="w-12 h-12 rounded-full object-cover bg-gray-200 flex-shrink-0"
-                              />
+                              <Avatar className="w-12 h-12">
+                                <AvatarImage src={doctor.image} alt={doctor.name} />
+                                <AvatarFallback className="bg-pink-100 text-pink-600">
+                                  {doctor.name.split(' ').map(n => n[0]).join('')}
+                                </AvatarFallback>
+                              </Avatar>
                               <div className="flex-1 min-w-0">
                                 <h3 className="font-medium text-gray-800 text-sm">{doctor.name}</h3>
                                 <p className="text-xs text-gray-600">{doctor.experience} experience</p>
