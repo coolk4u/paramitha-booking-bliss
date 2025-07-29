@@ -1,6 +1,6 @@
 
 import React, { useState } from 'react';
-import { X, Calendar, Clock, User } from 'lucide-react';
+import { X, Calendar, Clock, User, MapPin } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Calendar as CalendarComponent } from '@/components/ui/calendar';
@@ -20,9 +20,10 @@ interface AppointmentModalProps {
   onClose: () => void;
   doctor: any;
   specialty: string;
+  location: string;
 }
 
-const AppointmentModal = ({ isOpen, onClose, doctor, specialty }: AppointmentModalProps) => {
+const AppointmentModal = ({ isOpen, onClose, doctor, specialty, location }: AppointmentModalProps) => {
   const [selectedDate, setSelectedDate] = useState<Date | undefined>();
   const [selectedTimeSlot, setSelectedTimeSlot] = useState<string>('');
   const [selectedTime, setSelectedTime] = useState<string>('');
@@ -39,7 +40,7 @@ const AppointmentModal = ({ isOpen, onClose, doctor, specialty }: AppointmentMod
 
     toast({
       title: "Appointment Confirmed!",
-      description: `Your appointment with ${doctor.name} for ${specialty} on ${format(selectedDate, 'PPP')} at ${selectedTime} (${selectedTimeSlot}) has been scheduled successfully.`,
+      description: `Your appointment with ${doctor.name} for ${specialty} at ${location} on ${format(selectedDate, 'PPP')} at ${selectedTime} (${selectedTimeSlot}) has been scheduled successfully.`,
     });
     
     // Reset and close
@@ -55,7 +56,7 @@ const AppointmentModal = ({ isOpen, onClose, doctor, specialty }: AppointmentMod
         <DialogHeader>
           <DialogTitle className="text-xl font-semibold text-gray-800 flex items-center gap-2">
             Schedule Consultation Appointment
-            <span className="text-pink-500 text-sm">@ kompally</span>
+            <span className="text-pink-500 text-sm">@ {location}</span>
           </DialogTitle>
         </DialogHeader>
 
@@ -73,11 +74,15 @@ const AppointmentModal = ({ isOpen, onClose, doctor, specialty }: AppointmentMod
                 <User className="w-4 h-4" />
                 {specialty}
               </p>
+              <p className="text-sm text-gray-600 flex items-center gap-1 mt-1">
+                <MapPin className="w-4 h-4" />
+                {location}
+              </p>
             </div>
             <div className="text-right">
               <p className="text-sm font-medium text-gray-700">{specialty} OP Consultation</p>
               <p className="text-sm text-blue-600 flex items-center gap-1">
-                Available at <span className="text-blue-600">kompally</span>
+                Available at <span className="text-blue-600">{location}</span>
               </p>
             </div>
           </div>
