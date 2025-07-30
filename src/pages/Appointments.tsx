@@ -126,8 +126,9 @@ const Appointments = () => {
   const [selectedLocation, setSelectedLocation] = useState<number | null>(1);
   const [selectedSpecialty, setSelectedSpecialty] = useState<number | null>(null);
   const [selectedDoctor, setSelectedDoctor] = useState<any>(null);
-  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isAppointmentModalOpen, setIsAppointmentModalOpen] = useState(false);
   const [isPatientModalOpen, setIsPatientModalOpen] = useState(false);
+  const [appointmentDetails, setAppointmentDetails] = useState<any>(null);
   const [specialtySearch, setSpecialtySearch] = useState('');
   const [doctorSearch, setDoctorSearch] = useState('');
   const [experienceFilter, setExperienceFilter] = useState('all');
@@ -140,12 +141,19 @@ const Appointments = () => {
 
   const handleDoctorSelect = (doctor: any) => {
     setSelectedDoctor(doctor);
+    setIsAppointmentModalOpen(true);
+  };
+
+  const handleAppointmentScheduled = (appointmentData: any) => {
+    setAppointmentDetails(appointmentData);
+    setIsAppointmentModalOpen(false);
     setIsPatientModalOpen(true);
   };
 
   const handlePatientInfoSubmit = (patientInfo: any) => {
     setIsPatientModalOpen(false);
-    setIsModalOpen(true);
+    setSelectedDoctor(null);
+    setAppointmentDetails(null);
   };
 
   const selectedSpecialtyData = specialties.find(s => s.id === selectedSpecialty);
@@ -421,8 +429,20 @@ const Appointments = () => {
           </div>
         </div>
 
-        {/* Patient Information Modal */}
+        {/* Appointment Scheduling Modal */}
         {selectedDoctor && (
+          <AppointmentModal
+            isOpen={isAppointmentModalOpen}
+            onClose={() => setIsAppointmentModalOpen(false)}
+            onScheduled={handleAppointmentScheduled}
+            doctor={selectedDoctor}
+            specialty={selectedSpecialtyData?.name || ''}
+            location={selectedLocationData?.name || ''}
+          />
+        )}
+
+        {/* Patient Information Modal */}
+        {selectedDoctor && appointmentDetails && (
           <PatientInfoModal
             isOpen={isPatientModalOpen}
             onClose={() => setIsPatientModalOpen(false)}
@@ -430,17 +450,7 @@ const Appointments = () => {
             doctor={selectedDoctor}
             specialty={selectedSpecialtyData?.name || ''}
             location={selectedLocationData?.name || ''}
-          />
-        )}
-
-        {/* Appointment Modal */}
-        {selectedDoctor && (
-          <AppointmentModal
-            isOpen={isModalOpen}
-            onClose={() => setIsModalOpen(false)}
-            doctor={selectedDoctor}
-            specialty={selectedSpecialtyData?.name || ''}
-            location={selectedLocationData?.name || ''}
+            appointmentDetails={appointmentDetails}
           />
         )}
       </div>

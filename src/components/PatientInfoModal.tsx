@@ -4,7 +4,9 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/u
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { User, Mail, Phone } from 'lucide-react';
+import { User, Mail, Phone, Calendar, Clock, MapPin } from 'lucide-react';
+import { toast } from '@/hooks/use-toast';
+import { format } from 'date-fns';
 
 interface PatientInfoModalProps {
   isOpen: boolean;
@@ -13,6 +15,7 @@ interface PatientInfoModalProps {
   doctor: any;
   specialty: string;
   location: string;
+  appointmentDetails?: any;
 }
 
 interface PatientInfo {
@@ -22,7 +25,7 @@ interface PatientInfo {
   phone: string;
 }
 
-const PatientInfoModal = ({ isOpen, onClose, onSubmit, doctor, specialty, location }: PatientInfoModalProps) => {
+const PatientInfoModal = ({ isOpen, onClose, onSubmit, doctor, specialty, location, appointmentDetails }: PatientInfoModalProps) => {
   const [patientInfo, setPatientInfo] = useState<PatientInfo>({
     firstName: '',
     lastName: '',
@@ -43,6 +46,14 @@ const PatientInfoModal = ({ isOpen, onClose, onSubmit, doctor, specialty, locati
     // Basic validation
     if (!patientInfo.firstName || !patientInfo.lastName || !patientInfo.email || !patientInfo.phone) {
       return;
+    }
+
+    // Show success toast with appointment details
+    if (appointmentDetails) {
+      toast({
+        title: "Appointment Confirmed!",
+        description: `Your appointment with ${doctor.name} for ${specialty} at ${location} on ${format(appointmentDetails.date, 'PPP')} at ${appointmentDetails.time} (${appointmentDetails.timeSlot}) has been scheduled successfully.`,
+      });
     }
 
     onSubmit(patientInfo);
@@ -78,11 +89,32 @@ const PatientInfoModal = ({ isOpen, onClose, onSubmit, doctor, specialty, locati
         </DialogHeader>
 
         <div className="space-y-4">
-          {/* Doctor Info Summary */}
-          <div className="p-3 bg-gray-50 rounded-lg">
-            <p className="text-sm text-gray-600">Appointment with</p>
-            <p className="font-medium text-gray-800">{doctor?.name}</p>
-            <p className="text-xs text-gray-500">{specialty} • {location}</p>
+          {/* Appointment Summary */}
+          <div className="p-3 bg-gray-50 rounded-lg space-y-2">
+            <p className="text-sm text-gray-600">Appointment Summary</p>
+            <div className="space-y-1">
+              <p className="font-medium text-gray-800">{doctor?.name}</p>
+              <p className="text-xs text-gray-500 flex items-center gap-1">
+                <User className="w-3 h-3" />
+                {specialty}
+              </p>
+              <p className="text-xs text-gray-500 flex items-center gap-1">
+                <MapPin className="w-3 h-3" />
+                {location}
+              </p>
+              {appointmentDetails && (
+                <div className="flex items-center gap-3 text-xs text-gray-500 mt-2 pt-2 border-t">
+                  <div className="flex items-center gap-1">
+                    <Calendar className="w-3 h-3" />
+                    {format(appointmentDetails.date, 'PPP')}
+                  </div>
+                  <div className="flex items-center gap-1">
+                    <Clock className="w-3 h-3" />
+                    {appointmentDetails.time} ({appointmentDetails.timeSlot})
+                  </div>
+                </div>
+              )}
+            </div>
           </div>
 
           <form onSubmit={handleSubmit} className="space-y-4">
@@ -167,7 +199,7 @@ const PatientInfoModal = ({ isOpen, onClose, onSubmit, doctor, specialty, locati
                 className="flex-1 bg-pink-600 hover:bg-pink-700"
                 disabled={!patientInfo.firstName || !patientInfo.lastName || !patientInfo.email || !patientInfo.phone}
               >
-                Submit
+                Confirm Appointment
               </Button>
             </div>
           </form>

@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { X, Calendar, Clock, User, MapPin } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -18,12 +19,13 @@ const timeSlots = {
 interface AppointmentModalProps {
   isOpen: boolean;
   onClose: () => void;
+  onScheduled: (appointmentData: any) => void;
   doctor: any;
   specialty: string;
   location: string;
 }
 
-const AppointmentModal = ({ isOpen, onClose, doctor, specialty, location }: AppointmentModalProps) => {
+const AppointmentModal = ({ isOpen, onClose, onScheduled, doctor, specialty, location }: AppointmentModalProps) => {
   const [selectedDate, setSelectedDate] = useState<Date | undefined>();
   const [selectedTimeSlot, setSelectedTimeSlot] = useState<string>('');
   const [selectedTime, setSelectedTime] = useState<string>('');
@@ -38,16 +40,21 @@ const AppointmentModal = ({ isOpen, onClose, doctor, specialty, location }: Appo
       return;
     }
 
-    toast({
-      title: "Appointment Confirmed!",
-      description: `Your appointment with ${doctor.name} for ${specialty} at ${location} on ${format(selectedDate, 'PPP')} at ${selectedTime} (${selectedTimeSlot}) has been scheduled successfully.`,
-    });
+    const appointmentData = {
+      date: selectedDate,
+      timeSlot: selectedTimeSlot,
+      time: selectedTime,
+      doctor,
+      specialty,
+      location
+    };
+
+    onScheduled(appointmentData);
     
-    // Reset and close
+    // Reset form
     setSelectedDate(undefined);
     setSelectedTimeSlot('');
     setSelectedTime('');
-    onClose();
   };
 
   return (
@@ -171,7 +178,7 @@ const AppointmentModal = ({ isOpen, onClose, doctor, specialty, location }: Appo
               className="bg-blue-600 hover:bg-blue-700 text-white px-8"
               disabled={!selectedDate || !selectedTimeSlot || !selectedTime}
             >
-              Request Appointment
+              Next
             </Button>
           </div>
         </div>
