@@ -8,6 +8,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import AppointmentModal from '@/components/AppointmentModal';
+import PatientInfoModal from '@/components/PatientInfoModal';
 
 const specialties = [
   { id: 1, name: 'General paediatric specialty', icon: Baby, color: 'bg-pink-100 text-pink-600' },
@@ -126,6 +127,7 @@ const Appointments = () => {
   const [selectedSpecialty, setSelectedSpecialty] = useState<number | null>(null);
   const [selectedDoctor, setSelectedDoctor] = useState<any>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isPatientModalOpen, setIsPatientModalOpen] = useState(false);
   const [specialtySearch, setSpecialtySearch] = useState('');
   const [doctorSearch, setDoctorSearch] = useState('');
   const [experienceFilter, setExperienceFilter] = useState('all');
@@ -138,6 +140,11 @@ const Appointments = () => {
 
   const handleDoctorSelect = (doctor: any) => {
     setSelectedDoctor(doctor);
+    setIsPatientModalOpen(true);
+  };
+
+  const handlePatientInfoSubmit = (patientInfo: any) => {
+    setIsPatientModalOpen(false);
     setIsModalOpen(true);
   };
 
@@ -382,7 +389,7 @@ const Appointments = () => {
                                 className="bg-pink-600 hover:bg-pink-700 text-white h-8 px-4 text-xs"
                                 size="sm"
                               >
-                                Book Now
+                                Next
                               </Button>
                             </div>
                           </CardContent>
@@ -413,6 +420,18 @@ const Appointments = () => {
             )}
           </div>
         </div>
+
+        {/* Patient Information Modal */}
+        {selectedDoctor && (
+          <PatientInfoModal
+            isOpen={isPatientModalOpen}
+            onClose={() => setIsPatientModalOpen(false)}
+            onSubmit={handlePatientInfoSubmit}
+            doctor={selectedDoctor}
+            specialty={selectedSpecialtyData?.name || ''}
+            location={selectedLocationData?.name || ''}
+          />
+        )}
 
         {/* Appointment Modal */}
         {selectedDoctor && (
