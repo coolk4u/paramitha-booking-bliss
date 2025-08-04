@@ -7,6 +7,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Index from "./pages/Index";
 import Appointments from "./pages/Appointments";
 import NotFound from "./pages/NotFound";
+import FetchData from "./pages/FetchData";
 
 const queryClient = new QueryClient();
 
@@ -16,6 +17,7 @@ const App = () => (
       <Toaster />
       <Sonner />
       <BrowserRouter>
+      <FetchData />
         <Routes>
           <Route path="/" element={<Index />} />
           <Route path="/appointments" element={<Appointments />} />
