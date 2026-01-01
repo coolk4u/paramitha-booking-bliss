@@ -31,9 +31,8 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import AppointmentModal from "@/components/AppointmentModal";
 import PatientInfoModal from "@/components/PatientInfoModal";
-import axios from "axios";
 import { toast } from "@/components/ui/use-toast";
-import { format } from "date-fns"; // Added format import
+import { format } from "date-fns";
 
 const specialties = [
   {
@@ -349,6 +348,15 @@ const doctors = {
   },
 };
 
+// Dummy appointment data storage
+const dummyAppointments = {
+  appointments: [],
+  nextId: 1001,
+  generateAppointmentId: function() {
+    return `APP${this.nextId++}`;
+  }
+};
+
 const Appointments = () => {
   const navigate = useNavigate();
   const [selectedLocation, setSelectedLocation] = useState<number | null>(1);
@@ -426,39 +434,9 @@ const Appointments = () => {
     setIsLoading(true);
 
     try {
-      console.log("[1/4] Starting authentication with Salesforce...");
+      console.log("Starting appointment creation...");
 
-      // 1. Get access token from Salesforce
-      const tokenResponse = await axios
-        .post(
-          "https://pdedemoorg1-dev-ed.develop.my.salesforce.com/services/oauth2/token",
-          new URLSearchParams({
-            grant_type: "client_credentials",
-            client_id:
-              "3MVG9jSKmPAPVo2KVphgDZS.NyHqjFAtyXLxTtX95NuAAqeSCjVKtNc7BoQw3V0JrK21p0nBnEgo3Fm_mk.hO",
-            client_secret:
-              "A2180540ADA4EB9BBDCF0D8920D7C306A60708E1097519289A3F5F82A18DA684",
-          }),
-          {
-            headers: { "Content-Type": "application/x-www-form-urlencoded" },
-            timeout: 10000, // 10 second timeout
-          }
-        )
-        .catch((error) => {
-          console.error(
-            "Authentication failed:",
-            error.response?.data || error.message
-          );
-          throw new Error(
-            "Failed to connect to Salesforce. Please try again later."
-          );
-        });
-
-      console.log(
-        "[2/4] Authentication successful. Preparing appointment data..."
-      );
-
-      // 2. Validate and format appointment date and time
+      // Validate appointment details
       if (!appointmentDetails?.date || !appointmentDetails?.time) {
         throw new Error(
           "Please select both date and time for your appointment"
@@ -479,97 +457,44 @@ const Appointments = () => {
         );
       }
 
-      // Create date/time string in format "YYYY-MM-DD HH:MM"
-      const dateTimeString = `${formattedDate} ${appointmentDetails.time}`;
-      console.log("Formatted DateTime for Salesforce:", dateTimeString);
-
-      // 3. Prepare appointment payload with null checks
+      // Create appointment data object
       const appointmentData = {
-        Location_c: selectedLocationData?.name || "",
-        Speciality_c: selectedSpecialtyData?.name || "",
-        Doctor_Name: selectedDoctor?.name || "", // Full doctor name
-        Appointment_Date_and_Time_c: dateTimeString,
-        Patient_First_Name_c: patientInfo.firstName.trim(),
-        Patient_Last_Name_c: patientInfo.lastName.trim(),
-        Patient_Email_c: patientInfo.email.trim(),
-        Patient_Phone_Number_c: patientInfo.phone.trim(),
+        id: dummyAppointments.generateAppointmentId(),
+        location: selectedLocationData?.name || "",
+        specialty: selectedSpecialtyData?.name || "",
+        doctorName: selectedDoctor?.name || "",
+        doctorId: selectedDoctor?.id || "",
+        appointmentDate: formattedDate,
+        appointmentTime: appointmentDetails.time,
+        patientFirstName: patientInfo.firstName.trim(),
+        patientLastName: patientInfo.lastName.trim(),
+        patientEmail: patientInfo.email.trim(),
+        patientPhone: patientInfo.phone.trim(),
+        status: "confirmed",
+        createdAt: new Date().toISOString(),
+        timeSlot: `${appointmentDetails.time} - ${add30Minutes(appointmentDetails.time)}`,
+        notes: "Appointment created successfully",
       };
 
-      console.log(
-        "[3/4] Sending appointment data:",
-        JSON.stringify(appointmentData, null, 2)
-      );
+      console.log("Appointment data prepared:", appointmentData);
 
-      // 4. Create appointment via Apex REST API
-      const response = await axios
-        .post(
-          "https://pdedemoorg1-dev-ed.develop.my.salesforce.com/services/apexrest/AppointmentService",
-          appointmentData,
-          {
-            headers: {
-              Authorization: `Bearer ${tokenResponse.data.access_token}`,
-              "Content-Type": "application/json",
-              Accept: "application/json",
-            },
-            timeout: 15000, // 15 second timeout
-          }
-        )
-        .catch((error) => {
-          console.error("API Request Failed:", {
-            status: error.response?.status,
-            data: error.response?.data,
-            config: error.config,
-          });
+      // Simulate API delay
+      await new Promise(resolve => setTimeout(resolve, 1000));
 
-          if (error.response?.data) {
-            // Try to extract Salesforce error message
-            try {
-              const errorData =
-                typeof error.response.data === "string"
-                  ? JSON.parse(error.response.data)
-                  : error.response.data;
-              throw new Error(
-                errorData.error ||
-                  errorData.message ||
-                  "Appointment creation failed"
-              );
-            } catch (e) {
-              throw new Error(
-                error.response.data || "Appointment creation failed"
-              );
-            }
-          } else {
-            throw new Error(
-              error.message || "Network error. Please check your connection."
-            );
-          }
-        });
-
-      // Parse response (handling both string and object responses)
-      const responseData =
-        typeof response.data === "string"
-          ? JSON.parse(response.data)
-          : response.data;
-
-      console.log("[4/4] Salesforce Response:", responseData);
-
-      if (!responseData.success) {
-        throw new Error(responseData.message || "Appointment creation failed");
-      }
+      // Store in dummy data (in real app, this would be an API call)
+      dummyAppointments.appointments.push(appointmentData);
 
       // SUCCESS CASE
       setIsSuccess(true);
       setIsPatientModalOpen(false);
 
-      // In your success handler where you display the toast message:
+      // Show success toast
       toast({
         title: "Appointment Confirmed!",
         description: `Your appointment with ${selectedDoctor?.name} on ${format(
           new Date(appointmentDetails.date),
           "PPPP"
-        )} at ${appointmentDetails.time} (${
-          responseData.timeSlot
-        }) has been scheduled.`,
+        )} at ${appointmentDetails.time} (${appointmentData.timeSlot}) has been scheduled.`,
       });
 
       // Reset all form selections
@@ -578,14 +503,10 @@ const Appointments = () => {
       setSelectedDoctor(null);
       setAppointmentDetails(null);
 
-      // Optional: Redirect to confirmation page or show ticket
-      console.log("Appointment ID:", responseData.appointmentId);
+      console.log("Appointment created successfully:", appointmentData);
+
     } catch (error: any) {
-      console.error("Full Error Details:", {
-        message: error.message,
-        stack: error.stack,
-        response: error.response?.data,
-      });
+      console.error("Appointment creation error:", error);
 
       toast({
         title: "Appointment Failed",
@@ -597,6 +518,16 @@ const Appointments = () => {
       setIsLoading(false);
     }
   };
+
+  // Helper function to add 30 minutes to a time string
+  const add30Minutes = (time: string) => {
+    const [hours, minutes] = time.split(':').map(Number);
+    const date = new Date();
+    date.setHours(hours);
+    date.setMinutes(minutes + 30);
+    return `${date.getHours().toString().padStart(2, '0')}:${date.getMinutes().toString().padStart(2, '0')}`;
+  };
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-pink-50 via-white to-pink-50">
       {/* Header */}
